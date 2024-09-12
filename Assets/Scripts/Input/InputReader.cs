@@ -8,6 +8,11 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
 {
     public event Action OnJumped;
     public event Action OnDodged;
+    public event Action OnTargetEvent;
+    public event Action OnCancelTargetEvent;
+    public event Action<InputAction.CallbackContext> OnPrimaryAttackButtomPressed;
+    public event Action<InputAction.CallbackContext> OnSecondaryAttackButtomPressed;
+
     public Vector2 MovementValue { get; private set; }
 
 
@@ -53,5 +58,35 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     public void OnLook(InputAction.CallbackContext context)
     {
         
+    }
+
+    public void OnTarget(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+
+        OnTargetEvent?.Invoke();
+    }
+
+    public void OnCancelTarget(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+
+        OnCancelTargetEvent?.Invoke();
+    }
+
+    public void OnPrimaryAttack(InputAction.CallbackContext context)
+    {
+        OnPrimaryAttackButtomPressed?.Invoke(context);
+    }
+
+    public void OnSecondaryAttack(InputAction.CallbackContext context)
+    {
+        OnSecondaryAttackButtomPressed?.Invoke(context);
     }
 }

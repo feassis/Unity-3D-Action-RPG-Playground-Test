@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerFreeLookState : PlayerBaseState
 {
     private readonly int freeLookSpeedAnimParameter = Animator.StringToHash("FreeLookSpeed");
+    private readonly int freeLookBlendTree = Animator.StringToHash("FreeLookBlendTree");
 
     private const float animatorDampTime = 0.1f;
+    private const float crossFadeDuration = 0.1f;
 
     public PlayerFreeLookState(PlayerStateMachine playerStateMachine) : base(playerStateMachine)
     {
@@ -15,14 +19,18 @@ public class PlayerFreeLookState : PlayerBaseState
 
     public override void Enter()
     {
-        
+        stateMachine.GetInputReader().OnTargetEvent += OnTarget;
+        stateMachine.GetAnimator().CrossFadeInFixedTime(freeLookBlendTree, crossFadeDuration);
+        stateMachine.GetInputReader().OnPrimaryAttackButtomPressed += OnPrimaryAttackPressed;
     }
+
+    
 
     public override void Tick(float deltaTime)
     {
         Vector3 movement = CalculateMovement();
 
-        stateMachine.GetCharacterController().Move(movement * deltaTime * stateMachine.GetFreeLookMovementSpeed());
+        Move(movement * stateMachine.GetFreeLookMovementSpeed(), deltaTime);
 
         if (stateMachine.GetInputReader().MovementValue == Vector2.zero)
         {
@@ -37,9 +45,29 @@ public class PlayerFreeLookState : PlayerBaseState
 
     public override void Exit()
     {
-        
+        stateMachine.GetInputReader().OnTargetEvent -= OnTarget;
+        stateMachine.GetInputReader().OnPrimaryAttackButtomPressed -= OnPrimaryAttackPressed;
     }
-    
+
+    private void OnPrimaryAttackPressed(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+
+        stateMachine.SwitchState(new PlayerPrimaryAttackState(stateMachine, 0));
+    }
+
+    private void OnTarget()
+    {
+        if (!stateMachine.Targeter.SelectTarget())
+        {
+            return;
+        }
+
+        stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+    }
 
     private void FaceMovementDirection(Vector3 movement, float deltaTime)
     {
