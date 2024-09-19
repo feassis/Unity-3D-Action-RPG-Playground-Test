@@ -13,7 +13,7 @@ public class PlayerAttackStateBase : PlayerBaseState
     protected bool alreadyApplyedForce = false;
 
 
-    protected PlayerAttackStateBase(PlayerStateMachine playerStateMachine, int attackId) : base(playerStateMachine)
+    public PlayerAttackStateBase(PlayerStateMachine playerStateMachine, int attackId) : base(playerStateMachine)
     {
         this.attackId = attackId;
 
@@ -22,20 +22,18 @@ public class PlayerAttackStateBase : PlayerBaseState
 
     public override void Enter()
     {
-        stateMachine.GetAnimator().CrossFadeInFixedTime(attackData.AnimationName, attackData.TransitionDuration);
+        stateMachine.Animator.CrossFadeInFixedTime(attackData.AnimationName, attackData.TransitionDuration);
         stateMachine.GetInputReader().OnPrimaryAttackButtomPressed += OnPrimaryAttackPressed;
-        stateMachine.WeaponDamage.SetAttackDamage(attackData.AttackDamage);
+        stateMachine.WeaponDamage.SetAttackDamage(attackData.AttackDamage, attackData.AttackKnockback);
     }
 
     public override void Tick(float deltaTime)
     {
-        base.Tick(deltaTime);
-
         Move(deltaTime);
         FaceTarget();
 
 
-        float normalizedTime = GetNormalizedTime();
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator);
 
         if(normalizedTime >= previousFrameTime && normalizedTime < 1)
         {
@@ -67,8 +65,6 @@ public class PlayerAttackStateBase : PlayerBaseState
 
     public override void Exit()
     {
-        base.Exit();
-
         stateMachine.GetInputReader().OnPrimaryAttackButtomPressed -= OnPrimaryAttackPressed;
     }
 
@@ -107,22 +103,5 @@ public class PlayerAttackStateBase : PlayerBaseState
         
         stateMachine.ForceReciever.AddForce(stateMachine.transform.forward * attackData.Force);
         alreadyApplyedForce = true;
-    }
-
-    protected float GetNormalizedTime()
-    {
-        AnimatorStateInfo currInfo = stateMachine.GetAnimator().GetCurrentAnimatorStateInfo(0);
-        AnimatorStateInfo nextInfo = stateMachine.GetAnimator().GetNextAnimatorStateInfo(0);
-
-        if(stateMachine.GetAnimator().IsInTransition(0) && nextInfo.IsTag("Attack"))
-        {
-            return nextInfo.normalizedTime;
-        }
-        else if(!stateMachine.GetAnimator().IsInTransition(0) && currInfo.IsTag("Attack"))
-        {
-            return currInfo.normalizedTime;
-        }
-
-        return 0f;
     }
 }

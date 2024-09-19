@@ -18,7 +18,7 @@ public class PlayerTargetingState : PlayerBaseState
 
     public override void Enter()
     {
-        stateMachine.GetAnimator().CrossFadeInFixedTime(targetingBlendTree, crossFadeDuration);
+        stateMachine.Animator.CrossFadeInFixedTime(targetingBlendTree, crossFadeDuration);
         stateMachine.GetInputReader().OnCancelTargetEvent += OnCancelTarget;
         stateMachine.GetInputReader().OnPrimaryAttackButtomPressed += OnPrimaryAttackPressed;
     }
@@ -56,7 +56,7 @@ public class PlayerTargetingState : PlayerBaseState
             return;
         }
 
-        stateMachine.SwitchState(new PlayerPrimaryAttackState(stateMachine, 0));
+        stateMachine.SwitchState(new PlayerAttackStateBase(stateMachine, 0));
     }
 
     private void OnCancelTarget()
@@ -70,22 +70,22 @@ public class PlayerTargetingState : PlayerBaseState
 
         if (movementValue.y == 0)
         {
-            stateMachine.GetAnimator().SetFloat(targetingForwardHash, 0, 0.1f, deltaTime);
+            stateMachine.Animator.SetFloat(targetingForwardHash, 0, 0.1f, deltaTime);
         }
         else
         {
             float value = movementValue.y > 0 ? 1f : -1f;
-            stateMachine.GetAnimator().SetFloat(targetingForwardHash, value, 0.1f, deltaTime);
+            stateMachine.Animator.SetFloat(targetingForwardHash, value, 0.1f, deltaTime);
         }
 
         if (movementValue.x == 0)
         {
-            stateMachine.GetAnimator().SetFloat(targetingRightHash, 0, 0.1f, deltaTime);
+            stateMachine.Animator.SetFloat(targetingRightHash, 0, 0.1f, deltaTime);
         }
         else
         {
             float value = movementValue.x > 0 ? 1f : -1f;
-            stateMachine.GetAnimator().SetFloat(targetingRightHash, value, 0.1f, deltaTime);
+            stateMachine.Animator.SetFloat(targetingRightHash, value, 0.1f, deltaTime);
         }
 
     }

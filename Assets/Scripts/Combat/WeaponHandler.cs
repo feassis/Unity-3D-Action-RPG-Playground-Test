@@ -5,6 +5,7 @@ using UnityEngine;
 public class WeaponHandler : MonoBehaviour
 {
     [SerializeField] private GameObject weaponLogic;
+    [SerializeField] private GameObject secondaryWeaponLogic;
 
     public void EnableWeapon()
     {
@@ -14,5 +15,15 @@ public class WeaponHandler : MonoBehaviour
     public void DisableWeapon() 
     { 
         weaponLogic.SetActive(false); 
-    } 
+    }
+
+    public void EnableSecondaryWeapon()
+    {
+        secondaryWeaponLogic.SetActive(true);
+    }
+
+    public void DisableSecondaryWeapon()
+    {
+        secondaryWeaponLogic.SetActive(false);
+    }
 }

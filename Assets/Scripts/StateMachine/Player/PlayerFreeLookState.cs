@@ -20,7 +20,7 @@ public class PlayerFreeLookState : PlayerBaseState
     public override void Enter()
     {
         stateMachine.GetInputReader().OnTargetEvent += OnTarget;
-        stateMachine.GetAnimator().CrossFadeInFixedTime(freeLookBlendTree, crossFadeDuration);
+        stateMachine.Animator.CrossFadeInFixedTime(freeLookBlendTree, crossFadeDuration);
         stateMachine.GetInputReader().OnPrimaryAttackButtomPressed += OnPrimaryAttackPressed;
     }
 
@@ -34,11 +34,11 @@ public class PlayerFreeLookState : PlayerBaseState
 
         if (stateMachine.GetInputReader().MovementValue == Vector2.zero)
         {
-            stateMachine.GetAnimator().SetFloat(freeLookSpeedAnimParameter, 0, animatorDampTime, deltaTime);
+            stateMachine.Animator.SetFloat(freeLookSpeedAnimParameter, 0, animatorDampTime, deltaTime);
             return;
         }
 
-        stateMachine.GetAnimator().SetFloat(freeLookSpeedAnimParameter, 1, animatorDampTime, deltaTime);
+        stateMachine.Animator.SetFloat(freeLookSpeedAnimParameter, 1, animatorDampTime, deltaTime);
 
         FaceMovementDirection(movement, deltaTime);
     }
@@ -56,7 +56,7 @@ public class PlayerFreeLookState : PlayerBaseState
             return;
         }
 
-        stateMachine.SwitchState(new PlayerPrimaryAttackState(stateMachine, 0));
+        stateMachine.SwitchState(new PlayerAttackStateBase(stateMachine, 0));
     }
 
     private void OnTarget()

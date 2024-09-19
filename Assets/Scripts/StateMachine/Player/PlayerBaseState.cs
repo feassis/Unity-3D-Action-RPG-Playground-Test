@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class PlayerBaseState : State
+public abstract class PlayerBaseState : State
 {
     protected PlayerStateMachine stateMachine;
 
@@ -12,20 +12,6 @@ public class PlayerBaseState : State
         stateMachine = playerStateMachine;
     }
 
-    public override void Enter()
-    {
-        
-    }
-
-    public override void Exit()
-    {
-       
-    }
-
-    public override void Tick(float deltaTime)
-    {
-       
-    }
 
     protected void Move(float deltaTime)
     {
@@ -52,6 +38,18 @@ public class PlayerBaseState : State
         facinngDir.y = 0;
 
         stateMachine.transform.rotation = Quaternion.LookRotation(facinngDir);
+    }
+
+    protected void ReturnToLocomotion()
+    {
+        if(stateMachine.Targeter.CurrentTarget != null)
+        {
+            stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
+        }
+        else
+        {
+            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+        }
     }
 
     protected Vector3 CalculateMovement()
